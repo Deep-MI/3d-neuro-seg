@@ -1,0 +1,11 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: linux-64
+
+torch~=1.4.0
+torchsummary~=1.5.1
+numpy~=1.18.1
+h5py~=2.10.0
+scipy~=1.5.0
+scikit-image~=0.16.2
+tqdm~=4.42.1
