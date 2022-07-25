@@ -24,7 +24,7 @@ class DiceLoss(_Loss):
 
         eps = 0.001
         # torch.zeros_like(output)
-        encoded_target =  output.detach() * 0 #Creates a tensor with same shape as output with all zeros
+        encoded_target = output.detach() * 0  # Creates a tensor with same shape as output with all zeros
         encoded_target.scatter_(1, target, 1)
 
         if weights is None:
@@ -42,8 +42,8 @@ class DiceLoss(_Loss):
         denominator = denominator + eps
 
         loss_per_channel = weights * (1 - (numerator / denominator))  # batch/Channel-wise weights
-		
-		loss_per_channel = loss_per_channel.sum(0) # sum over batch dimension
+
+        loss_per_channel = loss_per_channel.sum(0)  # sum over batch dimension
 
         # Return per channel loss if needed otherwise only total loss
         if dice_per_channel is True:
@@ -63,10 +63,9 @@ class CrossEntropy3D(nn.Module):
 
     def forward(self, inputs, targets):
         #
-        if inputs.size()!=targets.size(): #ONLY incase of batch_size>1 in Dataloader
-            targets = targets.squeeze(0) # Because Dataloader adds an extra dimension
+        if inputs.size() != targets.size():  # ONLY incase of batch_size>1 in Dataloader
+            targets = targets.squeeze(0)  # Because Dataloader adds an extra dimension
         return self.nll_loss(inputs, targets)
-
 
 
 class CombinedLoss(nn.Module):
@@ -82,7 +81,7 @@ class CombinedLoss(nn.Module):
         super(CombinedLoss, self).__init__()
         # self.cross_entropy_loss = FocalCrossEntropy()
         self.cross_entropy_loss = CrossEntropy3D()
-        #self.thresh_confidence_loss = ThresholdedConfidencePenalty()
+        # self.thresh_confidence_loss = ThresholdedConfidencePenalty()
         self.dice_loss = DiceLoss()
         self.weight_dice = weight_dice
         self.weight_ce = weight_ce
@@ -96,8 +95,8 @@ class CombinedLoss(nn.Module):
 
     def forward(self, inputx, target, weight):
         # train_utils does this before fprop anyway
-        #target = target.type(torch.LongTensor)  # Typecast to long tensor
-        #if inputx.is_cuda:
+        # target = target.type(torch.LongTensor)  # Typecast to long tensor
+        # if inputx.is_cuda:
         #    target = target.cuda()
 
         # Target should be of form (1 , 1, size_x, size_y, size_z), ie, NOT one-hot

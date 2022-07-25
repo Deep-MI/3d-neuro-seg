@@ -3,7 +3,7 @@ import h5py
 
 from torch.utils.data import Dataset
 
-from utils.preprocess import create_weight_mask
+from .preprocess import create_weight_mask
 
 
 class HDF5Dataset(Dataset):

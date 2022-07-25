@@ -1,11 +1,9 @@
 import torch
-import torch.nn as nn
-from model.RCVNet import RCVNet
 
 from numpy.random import randint
 import os
 
-from model.RCVNet import RCVNet
+from .RCVNet import RCVNet
 
 # SLightly different from random patches. Trying to generate viable "left corners"
 def make_rand_coords(start_coords=(128, 128, 128), patch_size=(64, 64, 64)):

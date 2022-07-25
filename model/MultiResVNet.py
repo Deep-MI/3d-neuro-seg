@@ -3,12 +3,13 @@ import torch.nn as nn
 
 from numpy.random import random_sample
 
-from model.VNet import EncoderBlock, BottleNeck, DecoderBlock, DecoderBlockTrans, DecoderBlockTransML
+from .VNet import EncoderBlock, BottleNeck, DecoderBlock, DecoderBlockTrans, DecoderBlockTransML
+
 
 def make_rand_coords(input_size=(256,256,256), patch_size=(64,64,64)):
-    return [get_dims(input_size[0] - patch_size[0]), \
-           get_dims(input_size[1] - patch_size[1]), \
-           get_dims(input_size[2] - patch_size[2])]
+    return [get_dims(input_size[0] - patch_size[0]),
+            get_dims(input_size[1] - patch_size[1]),
+            get_dims(input_size[2] - patch_size[2])]
 
 
 def get_dims(upper):

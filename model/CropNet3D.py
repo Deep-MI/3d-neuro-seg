@@ -2,7 +2,7 @@ import torch.nn as nn
 
 from numpy.random import random_sample
 
-from model.VNet import EncoderBlock, BottleNeck, DecoderBlock
+from .VNet import EncoderBlock, BottleNeck, DecoderBlock
 
 def make_rand_coords(input_size=(256,256,256), patch_size=(64,64,64)):
     return [get_dims(input_size[0] - patch_size[0]), \

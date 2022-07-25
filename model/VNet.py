@@ -96,18 +96,18 @@ class EncoderBlock(nn.Module):
         if params['input']:
             self.conv_input = nn.Sequential(
                 nn.Conv3d(in_channels=params['in_channels'], out_channels=params['out_channels'],
-                          kernel_size=(1,1,1), padding=0, stride=1),
+                          kernel_size=(1, 1, 1), padding=0, stride=1),
                 nn.GroupNorm(num_groups=4, num_channels=params['out_channels']),
                 nn.PReLU()
             )
             params['in_channels'] = params['out_channels']
         self.encoder_block = Block(params)
         self.down_block = nn.Sequential(
-                nn.Conv3d(in_channels=params['out_channels'], out_channels=2*params['out_channels'],
-                          kernel_size=(2,2,2), padding=0, stride=2),
-                nn.GroupNorm(num_groups=4, num_channels=2*params['out_channels']),
-                nn.PReLU()
-            )
+            nn.Conv3d(in_channels=params['out_channels'], out_channels=2 * params['out_channels'],
+                      kernel_size=(2, 2, 2), padding=0, stride=2),
+            nn.GroupNorm(num_groups=4, num_channels=2 * params['out_channels']),
+            nn.PReLU()
+        )
 
     def forward(self, x):
 
@@ -120,7 +120,7 @@ class EncoderBlock(nn.Module):
         x_res = x_res + x
         x_down = self.down_block(x_res)
         # print(x_down.shape, x_res.shape)
-        return  x_res, x_down
+        return x_res, x_down
 
 
 class DecoderBlock(nn.Module):
@@ -131,6 +131,7 @@ class DecoderBlock(nn.Module):
     Block
     Conv3d strided upsampling
     """
+
     def __init__(self, params):
         """
 
@@ -146,11 +147,11 @@ class DecoderBlock(nn.Module):
 
         if not params['out']:
             self.up_block = nn.Sequential(
-                    nn.ConvTranspose3d(in_channels=params['out_channels'], out_channels=int(params['out_channels']/2),
-                              kernel_size=(2,2,2), padding=0, stride=2),
-                    nn.GroupNorm(num_groups=4, num_channels=int(params['out_channels']/2)),
-                    nn.PReLU()
-                )
+                nn.ConvTranspose3d(in_channels=params['out_channels'], out_channels=int(params['out_channels'] / 2),
+                                   kernel_size=(2, 2, 2), padding=0, stride=2),
+                nn.GroupNorm(num_groups=4, num_channels=int(params['out_channels'] / 2)),
+                nn.PReLU()
+            )
         else:
             self.up_block = None
 
@@ -170,12 +171,12 @@ class DecoderBlockTrans(DecoderBlock):
     """
     Decoder blocks for transition layer in MultiResVNet in lower to upper layer. ONLY defined for MultiResVNet.
     """
+
     def __init__(self, params):
         """
         Inherits from Decoder Block.
         """
         super(DecoderBlockTrans, self).__init__(params)
-
 
     def forward(self, x_res, x_up, coords, patch_size):
 
@@ -184,9 +185,10 @@ class DecoderBlockTrans(DecoderBlock):
         x1 = x + x_up
 
         if self.training:
-            x1 = x1[..., coords[0]:coords[0] + patch_size[0],
-                            coords[1]:coords[1] + patch_size[1],
-                            coords[2]:coords[2] + patch_size[2]]
+            x1 = x1[...,
+                    coords[0]:coords[0] + patch_size[0],
+                    coords[1]:coords[1] + patch_size[1],
+                    coords[2]:coords[2] + patch_size[2]]
 
         try:
             x1 = self.up_block(x1)
@@ -200,6 +202,7 @@ class DecoderBlockTransML(DecoderBlock):
     Decoder blocks for transition layer in MultiResVNet in lower to upper layer, with multiple losses. ONLY defined for
     MultiResVNet.
     """
+
     def __init__(self, params):
         """
         Inherits from Decoder Block
@@ -214,9 +217,10 @@ class DecoderBlockTransML(DecoderBlock):
 
         # only in training, crop the image
         if self.training:
-            x_crop = x_layer[..., coords[0]:coords[0] + patch_size[0],
-                            coords[1]:coords[1] + patch_size[1],
-                            coords[2]:coords[2] + patch_size[2]]
+            x_crop = x_layer[...,
+                             coords[0]:coords[0] + patch_size[0],
+                             coords[1]:coords[1] + patch_size[1],
+                             coords[2]:coords[2] + patch_size[2]]
 
         if self.training:
             x_up = self.up_block(x_crop)
@@ -254,11 +258,11 @@ class BottleNeck(nn.Module):
         # params['in_channels'] = params['out_channels']
         self.encoder_block = Block(params)
         self.up_block = nn.Sequential(
-                nn.ConvTranspose3d(in_channels=params['out_channels'], out_channels=params['out_channels'],
-                          kernel_size=(2,2,2), padding=0, stride=2),
-                nn.GroupNorm(num_groups=4, num_channels=params['out_channels']),
-                nn.PReLU()
-            )
+            nn.ConvTranspose3d(in_channels=params['out_channels'], out_channels=params['out_channels'],
+                               kernel_size=(2, 2, 2), padding=0, stride=2),
+            nn.GroupNorm(num_groups=4, num_channels=params['out_channels']),
+            nn.PReLU()
+        )
 
     def forward(self, x):
 
@@ -288,4 +292,4 @@ if __name__ == "__main__":
     # m = CompetitiveEncoderBlockInput(params=params).cuda()
     from torchsummary import summary
     print(m)
-    summary(m, input_size=(1,32,32,32))
+    summary(m, input_size=(1, 32, 32, 32))
